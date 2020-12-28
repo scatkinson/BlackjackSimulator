@@ -127,6 +127,13 @@ This strategy always gives a positive expected value which depends on the bet sp
 
 ### 1.2. Game parameters<a id='1.2._Game_parameters'></a>
 
+The game parameters we consider in this project are as follows:
+
+* Number of decks: most typical options are 2, 4, and 6
+* Penetration: this indicates how much of the shoe (combination of decks in play) is played before the dealer shuffles.  The penetration is given by the threshold number of decks left in the shoe that triggers a shuffle.  For example, if the penetration is equal to 1, then the dealer will shuffle when there is approximately 1 deck's worth of cards remaining in the shoe.  The penetrations we will consider are 0.5, 1, 1.5, and 2.  Lower penetrations are more advantageous for card counters as we will see from the simulator data.
+* Seventeen: this indicates if the dealer will play S17 or H17 rules as discussed above.
+* Blackjack payout: this is the ratio at which a blackjack for the player pays.  The two values we will consider are 3:2 and 6:5.
+
 
 ## 2. Simulator<a id='2._Simulator'></a>
 
