@@ -4,22 +4,44 @@
 
 ## [1. Introduction](#1._Introduction)
 ### [1.0. The game of blackjack](#1.0._The_game_of_blackjack)
-* ### Introduce the game of blackjack.
+
 ### [1.1. Strategies](#1.1._Strategies)
-* ### Discuss the various strategies considered. 
+ 
 ### [1.2. Game parameters](#1.2._Game_parameters)
 
 ## [2. Simulator](#2._Simulator)
 
-* ### Discuss the simulator engine built in `BJ_game_finite_deck.ipynb`.
+* ### [2.0. Pack class](#2.0.)
+
+* ### [2.1. Player classes](#2.1.)
+
+    * #### [2.1.0. Naive class](#2.1.0.)
+
+    * #### [2.1.1. Copycat class](#2.1.1.)
+
+    * #### [2.1.2. Basic class](#2.1.2.)
+
+    * #### [2.1.3. Card Counter class](#2.1.3.)
+
+* ### [2.2. Dealer class](#2.2.)
+
+* ### [2.3. Game-play class](#2.3.)
+
+* ### [2.4. Samples class](#2.4.)
 
 ## [3. Analysis](#3._Analysis)
 
-* ### Discuss the analysis of the data obtain from the simulator. 
+* ### [3.0. Largest Losses](#3.0.)
+
+* ### [3.1. Correlation between opening count and total round winnings](#3.1.)
+
+* ### [3.2. Correlation between change in opening count and total round winnings](#3.2.)
+
+* ### [3.3. Simple probabilities](#3.3.)
 
 ## [4. Machine Learning](#4._Machine_Learning)
 
-* ### Discuss the model built to predict certain quantities (e.g., expected values) associated to various strategies and bet spreads.
+
 
 
 ## 1. Introduction<a id='1._Introduction'></a>
@@ -35,7 +57,7 @@ Special attention must be paid to what the dealer does on a soft 17: a hand cont
 If the dealer busts (and the player hasn't busted, of course) then the player automatically wins the round, keeping their bet and earning an amount equal to their initial bet.  If neither the player nor the dealer has busted, then after the dealer's turn, whoever has a higher hand value wins the round.  If the dealer has a higher hand value than that of the player, the player loses the round and their bet.  If the dealer has a lower hand value than that of the player, the player wins the round, keeping their bet and earning an amount equal to their initial bet.  If both player and dealer have hands with the same value, it is said that the player 'pushes' and no money changes hands.
 
 #### Blackjack:
-In the game of blackjack, there is a certain kind of hand that is also called a Blackjack.  A Blackjack hand consists of two cards: an ace and 10-value card.  In other words, it is a two-card hand with the highest score possible: 21.  If a player is dealt a Blackjack, and the dealer does not also have a Blackjack, then they automatically win the round receiving a payout higher than the usual 1:1 ratio for standard wins.  Depending on the Blackjack table, this ratio can vary.  The most common ratios are 3:2 (win \\$30 on a \\$20 bet) and 6:5 (win \\$24 on a \\$20 bet).  If both player and dealer have Blackjacks, it is a push.  If the dealer has a Blackjack and the player does not, the player automatically loses the round and their bet. Losing to a dealer's Blackjack can sometimes be protected against by taking *insurance*.  If the dealer upcard is an ace, the player is offered to opportunity to take a side bet called 'insurance.'. Typically insurance pays 2:1 if the dealer ends up having a Blackjack.  So in practice, if a player wanted to accept the insurance offer, they would place an additional bet equal to one half of their original bet.  That way if the dealer has a Blackjack, the player loses no money. If the dealer does not have a Blackjack, the player loses their insurance side bet.
+In the game of blackjack, there is a certain kind of hand that is also called a Blackjack.  A Blackjack hand consists of two cards: an ace and 10-value card.  In other words, it is a two-card hand with the highest score possible: 21.  If a player is dealt a Blackjack, and the dealer does not also have a Blackjack, then they automatically win the round receiving a payout higher than the usual 1:1 ratio for standard wins.  Depending on the Blackjack table, this ratio can vary.  The most common ratios are 3:2 (win \$30 on a \$20 bet) and 6:5 (win \$24 on a \$20 bet).  If both player and dealer have Blackjacks, it is a push.  If the dealer has a Blackjack and the player does not, the player automatically loses the round and their bet. Losing to a dealer's Blackjack can sometimes be protected against by taking *insurance*.  If the dealer upcard is an ace, the player is offered to opportunity to take a side bet called 'insurance.'. Typically insurance pays 2:1 if the dealer ends up having a Blackjack.  So in practice, if a player wanted to accept the insurance offer, they would place an additional bet equal to one half of their original bet.  That way if the dealer has a Blackjack, the player loses no money. If the dealer does not have a Blackjack, the player loses their insurance side bet.
 
 #### Double down:
 At the beginning of a player's turn, before any additional cards have been received, they have the option to *double down* on their initial bet.  This entails doubling the amount of the initial bet and hitting exactly once (standing after just one hit).
@@ -121,7 +143,7 @@ The card counter's increase expected value is due in part to the above deviation
 * true count 5: ten betting units on two spots
 * true count 6: twelve betting units on two spots
 
-Here, a betting unit is some amount of money such that the player is comfortable with the associated risk.  For example, if the betting unit is \\$10 then ten betting units would be \\$100.  The distinction between one and two spots indicates if the player will play one hand at a time (one spot) or play two hands simultaneously (two spots) for each round.  So ten betting units on two spots with a betting unit of \\$10 would mean that the player is betting \\$200 for that round.
+Here, a betting unit is some amount of money such that the player is comfortable with the associated risk.  For example, if the betting unit is \$10 then ten betting units would be \$100.  The distinction between one and two spots indicates if the player will play one hand at a time (one spot) or play two hands simultaneously (two spots) for each round.  So ten betting units on two spots with a betting unit of \$10 would mean that the player is betting \$200 for that round.
 
 This strategy always gives a positive expected value which depends on the bet spread and the game parameters.
 
@@ -137,12 +159,146 @@ The game parameters we consider in this project are as follows:
 
 ## 2. Simulator<a id='2._Simulator'></a>
 
+In [this notebook](https://github.com/scatkinson/BlackjackSimulator/blob/main/BJ_game_finite_deck.ipynb) we build a Blackjack simulator using object oriented programming in python.
+
+### 2.0. Pack class<a id='2.0.'></a>
+
+This class manages the shoe of the game.  The one input parameter is the number of decks in use. Contents:
+
+* `fresh_pack` method: produces a freshly shuffled shoe
+* `deal` method: removes a dealt card from the shoe
+* `card` method: selects a card from the current state of the shoe at random based on the distribution of the current shoe
+* `rc` method: gives the running count of the current state of the shoe
+* `tc` method: gives the true count of the current state of the shoe
+* `card_total` method: gives the total number of cards in the current shoe
+
+### 2.1. Player classes<a id='2.1.'></a>
+
+For each strategy mentioned above there is a corresponding class. All classes are passed the following parameters: `hands` (number of hands), `top` (top card shown by dealer), `bet` (bet value--set to 1, but can be changed), `spots` (number of spots played--set to 1 but can be changed--is changed by Card Counter class), `shoe` (shoe class to connect the player's turn to the current show) 
+
+#### 2.1.0. Naive class<a id='2.1.0.'></a>
+
+Contents:
+
+* `Spots` method: returns the number of spots being played (always 1 for naive)
+* `betting` method: reuturns the number of betting units wagered (always 1 for naive)
+* `hit` method: deals the player another card from the shoe
+* `stand` method: indicates the player stands
+* `result` method: initiates the list of results for the player
+* `is_soft` method: checks if the hand is soft
+* `p_turn` method: initiates the steps for the player's turn. Checks for Blackjacks. If no Blackjacks then calls the `p_strat` method.
+* `p_strat` method: implements the player's Naive strategy
+
+#### 2.1.1. Copycat class<a id='2.1.1.'></a>
+
+Contents:
+
+* `Spots` method: returns the number of spots being played (always 1 for copycat)
+* `betting` method: reuturns the number of betting units wagered (always 1 for copycat)
+* `hit` method: deals the player another card from the shoe
+* `stand` method: indicates the player stands
+* `result` method: initiates the list of results for the player
+* `is_soft` method: checks if the hand is soft
+* `p_turn` method: initiates the steps for the player's turn. Checks for Blackjacks. If no Blackjacks then calls the `p_strat` method.
+* `p_strat` method: implements the player's Copycat strategy
+
+#### 2.1.2. Basic class<a id='2.1.2.'></a>
+
+Contents:
+
+* `Spots` method: returns the number of spots being played (always 1 for basic)
+* `betting` method: reuturns the number of betting units wagered (always 1 for basic)
+* `hit` method: deals the player another card from the shoe
+* `double` method: called when the player doubles down (doubles bet initiated by `betting` method)
+* `split` method: called when the player splits a hand
+* `split_test` method: checks if the max number of splits (3) has been exceeded
+* `is_pair` method: checks if the hand is eligible for a split
+* `stand` method: indicates the player stands
+* `result` method: initiates the list of results for the player
+* `is_soft` method: checks if the hand is soft
+* `p_turn` method: initiates the steps for the player's turn. Checks for Blackjacks. If no Blackjacks then calls the `p_strat` method.
+* `p_strat` method: implements the Basic strategy
+
+#### 2.1.3. Card counter class<a id='2.1.3.'></a>
+
+This class is passed some additional parameters: `spread` (the counter's bet spread) and `opening_count` (the opening count of the shoe). Contents:
+
+* `Spots` method: returns the number of spots being played (determined by bet spread)
+* `betting` method: reuturns the number of betting units wagered (determined by bet spread)
+* `hit` method: deals the player another card from the shoe
+* `double` method: called when the player doubles down (doubles bet initiated by `betting` method)
+* `split` method: called when the player splits a hand
+* `split_test` method: checks if the max number of splits (3) has been exceeded
+* `is_pair` method: checks if the hand is eligible for a split
+* `stand` method: indicates the player stands
+* `result` method: initiates the list of results for the player
+* `is_soft` method: checks if the hand is soft
+* `p_turn` method: initiates the steps for the player's turn. Checks for Blackjacks. If no Blackjacks then calls the `p_strat` method.
+* `p_strat` method: implements the Card Counter strategy
+
+### 2.2. Dealer class <a id='2.2.'></a>
+
+This class manages the play of the dealer.  The parameters are as follows: `hand` (the dealer's hand), `shoe` (the state of the current shoe), and `seventeen` (determines if the dealer is playing S17 or H17). Contents:
+
+* `is_soft` method: checks if the dealer's hand is soft
+* `hit` method: deals another card to the dealer
+* `result` method: initiates the dealer's result list
+* `d_turn` method: carries out the steps for the dealear's turn and returns the result of that turn
+
+### 2.3. Game-play class<a id='2.3.'></a>
+
+This class carries out the process of a round of blackjack.  Parameters: `shoe` (the state of the current shoe), `pen` (the penetration of the shoe), `strategy` (the strategy used by the player), `seventeen` (the seventeen rule played by the dealer: S17 or H17), `BJpays` (the ratio at which a Blackjack pays--3:2 or 6:5), `spread` (the bet spread of the carde counter if that is the strategy being used by the player). Contents:
+
+* `fill_shoe` method: deals a fresh shoe
+* `BJratio` method: establishes the `BJpays` ratio as a fraction
+* `round` method: carries out the steps of a round of blackjack. Check if a shuffle is need (if the amount of cards has fallen below the threshold set by `pen`). Instantiate the dealer and player class. Record `opening_count`. Deal out cards in proper order: player, dealer, player, dealer. Assign dealer's top card for player class. Establish player bet. Initiate player result, split count, and double down lists.  Initiate `insurance` value (`False`); offer player insurance if dealer's top card is an ace. Check for Blackjacks. Call `p_turn` method on player class. Record player winnings.  Return winnings and dictionary containing `opening_count`, `cards_left`, `spots` played, `player_bets`, `double_down`, `player_hands`, `dealer_hand`, `player_results`, `dealer_result`, `insurance`, `player_winnings_by_hand`, `total_round_winnings`.
+* `outcome` method: iterprets the player and dealer results to compute the payout for the player. Returns `winnings_by_hand`.
+
+### 2.4. Samples class<a id='2.4.'></a>
+
+This class runs the simulations of a blackjack game.  Parameters: `shoe` (current shoe), `pen` (penetration to be played), `strategies` (list of strategies to be sampled), `seventeen` (which seventeen rule the dealer plays), `num_players` (number of players at the table--always set to 1 but can be changed), `num_rounds` (number of rounds to be played), `BJpays` (Blackjack payout ratio), `spread` (card counter's bet spread). Contents:
+
+* `data_table` method: produces a Pandas DataFrame with `num_rounds` entries for each strategy in the `strategies` list.  Each row corresponds to a round of blackjack.  Columns: `decks`, `pen`, `Blackjack_pays`, `Dealer_seventeen`, `strategy`, `spread`, `opening_count`, `cards_left`, `spots`, `bets`, `double_down`, `player_hands`, `dealer_hands`, `player_results`, `dealer_results`, `insurance`, `player_winnings_by_hand`, `total_round_winnings`.  This is the method used to produce the data frames for the non-counter classes for each combination of game parameters considered.
+
+* `data_table_counter` method: similarly produces a Pandas DataFrame with `num_rounds` entries for a counter strategy with the bet spread passed to the `samples` class.  Each row corresponds to a round of blackjack.  The columns are the same as the columns from the `data_table` method with additional columns indicating the bet and number of spots for each true count -1 through 6 as indicated by the `spread` parameter.
+
+### 2.5. Game parameters list  and sample collection<a id='2.5.'></a>
+
+We then create a list called `product` listing all tuples of game parameters as indicated in [Section 1.2](#1.2._Game_parameters) (except no games with 2 decks and pen 2 are played sampled for obvious reasons).  This list containes 44 distinct tuples. We loop over this list using `data_table` with 1,000,000 rounds to produce 44 DataFrames for each non-counter strategy.  
+
+Next we create a dictionary containing 20 different bet spreads for the counter strategy.  We loop over each bet spread and the 44 tuples of game parameters to produce 880 DataFrames, each with 1,000,000 rounds of blackjack.  
+
+These 924 DataFrames (924,000,000 rounds of blackjack) will serve as the raw data for our analysis and training and testing for our predictive models.
+
+These files are too large to upload to GitHub, so we include a smaller version (coming soon) for this repository.
+
+
 ## 3. Analysis<a id='3._Analysis'></a>
+
+We perform some analysis on the data obtained from the simulator.
+
+### 3.0. Largest losses<a id='3.0.'></a>
+
+We define a function `losses` that samples a random collection of 50,000 consecutive rounds from a given strategy dataframe 100,000 times to obtain the distribution of the most amount of money (in terms of betting units) a player can expect to lose.  The function returns the array of losses (length 100,000) and displays a boxplot, histogram/probability density function, and cumulative density function for the distribution of losses.
+
+### 3.1. Correlation between opening count and total round winnings<a id='3.1.'></a>
+
+We investigate the correlation between opening count and total round winnings for various strategies and use hypothesis testing to determine if these correlations are statistically significant (they are). 
+
+### 3.2. Correlation between change in opening count and total round winnings<a id='3.2.'></a>
+
+The above analysis indicates that a positive opening count is advantageous for the basic player and card counter.  In this subsection we investigate the correlation between the change in the opening count and total round winnings for various strategies.  Again hypothesis testing shows that these correlations are statistically significant.  What htis analysis shows is that the reason a positive count is advantageous for the player is because we are using a balanced counting system, so a positive count is more likely to decrease.  And a decrease in count is actually what is advantageous for the players--the more 10-value cards and aces dealt, the better off the player is.
+
+### 3.3. Simple probabilities<a id='3.3.'></a>
+
+For each sampled strategy/game-parameter combination, we compute some simple probabilities: the overall probability of winning, the overall expected value of total round winnings (negative for all non-counter strategies regardless of game-parameter), the probability of winning given a positive opening count, the expected value of total round winnings conditioned on a positive opening count (still negative for naive and copycat, but turns positive for basic), and the fifth percentile for losses (the most you can expect to lose 95\% of the time).  DataFrame of simple probabilities coming soon.
+    
+
 
 ## 4. Machine Learning<a id='4._Machine_Learning'></a>
 
+Now that we have collected the data, we prepare it for our machine learning task.  Focusing on the counter strategy, for each bet spread/game-parameter combination sampled, we compute the expected value for total round winnings and the fifth percentile for losses.  This produces a DataFrame with 880 entries (coming soon).  We evaluate various regression models to predict expected value and fifth percentile loss individually (currently in progress).
 
 
-The main feature of this repository is the notebook containing an engine (built using object-oriented programming) to sample millions of hands of blackjack.  There are four strategies that can be sampled: naive, copycat, basic, and counter.  Each strategy is sampled 'heads up' against a dealer where the dealer's strategy (H17 or S17) can be selected.  The sample is written into a dataframe that is saved to a `.csv` file.  This dataframe includes data on the strategy type, opening count, spots, bets, player hand(s), dealer hand, player result(s), dealer result, winnings per hand, and total round winnings.  The total round winnings column can be used to create an accumulated winnings column.  We can form scatter plots based on strategy, and we can plot accumulated winnings by strategy.
 
-We also perform data analysis on 
+
