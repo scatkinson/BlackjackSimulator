@@ -31,15 +31,20 @@
 
 ## [3. Analysis](#3._Analysis)
 
-* ### [3.0. Largest Losses](#3.0.)
+* ### [3.0. Plot winnings for different strategies](#3.0.)
 
-* ### [3.1. Correlation between opening count and total round winnings](#3.1.)
+* ### [3.1. Largest Losses](#3.1.)
 
-* ### [3.2. Correlation between change in opening count and total round winnings](#3.2.)
+* ### [3.2. Correlation between opening count and total round winnings](#3.2.)
 
-* ### [3.3. Simple probabilities](#3.3.)
+* ### [3.3. Correlation between change in opening count and total round winnings](#3.3.)
+
 
 ## [4. Machine Learning](#4._Machine_Learning)
+
+* ### [4.0. Assembling sampled data](#4.0.)
+
+* ### [4.1. Modeling](#4.1.)
 
 
 
@@ -159,7 +164,7 @@ The game parameters we consider in this project are as follows:
 
 ## 2. Simulator<a id='2._Simulator'></a>
 
-In [this notebook](https://github.com/scatkinson/BlackjackSimulator/blob/main/BJ_game_finite_deck.ipynb) we build a Blackjack simulator using object oriented programming in python.
+In [this notebook](https://github.com/scatkinson/BlackjackSimulator/blob/main/BJ_game_finite_deck.ipynb) we build a Blackjack simulation engine using object oriented programming in python.
 
 ### 2.0. Pack class<a id='2.0.'></a>
 
@@ -275,30 +280,51 @@ These files are too large to upload to GitHub, so we include a smaller version (
 
 ## 3. Analysis<a id='3._Analysis'></a>
 
-We perform some analysis on the data obtained from the simulator.
+We perform some analysis on the data obtained from the simulator in [this notebook](https://github.com/scatkinson/BlackjackSimulator/blob/main/BlackjackAnalysis.ipynb). Throughout the notebook, we use the following game parameters for the sake of illustration:
+* 6 decks
+* penetration 1
+* dealer plays H17
+* Blackjack pays 3:2
 
-### 3.0. Largest losses<a id='3.0.'></a>
+### 3.0. Plot winnings for different strategies<a id='3.0.'></a>
 
-We define a function `losses` that samples a random collection of 50,000 consecutive rounds from a given strategy dataframe 100,000 times to obtain the distribution of the most amount of money (in terms of betting units) a player can expect to lose.  The function returns the array of losses (length 100,000) and displays a boxplot, histogram/probability density function, and cumulative density function for the distribution of losses.
+For the above game parameters, we plot the accumulated winnings over 1,000,000 rounds for each of the following strategies:
+* naive
+* copycat
+* basic
+* counter (twelve spread)
 
-### 3.1. Correlation between opening count and total round winnings<a id='3.1.'></a>
+![Plot of accumulated winnings over 1,000,000 rounds for various strategies](plots/6_1_H17_[3, 2]_winnings_plot.jpeg "Plot of accumulated winnings")
 
-We investigate the correlation between opening count and total round winnings for various strategies and use hypothesis testing to determine if these correlations are statistically significant (they are). 
+### 3.1. Largest losses<a id='3.1.'></a>
 
-### 3.2. Correlation between change in opening count and total round winnings<a id='3.2.'></a>
+We define a function `losses` that samples a random collection of 50,000 consecutive rounds from a given strategy dataframe 100,000 times to obtain the distribution of the most amount of money (in terms of betting units) a player can expect to lose.  The function returns the array of losses (length 100,000) and displays a boxplot, histogram/probability density function, and cumulative density function for the distribution of losses.  Here is the plot of the cumulative density function for the distribution of losses for a twelve-spread counter strategy:
 
-The above analysis indicates that a positive opening count is advantageous for the basic player and card counter.  In this subsection we investigate the correlation between the change in the opening count and total round winnings for various strategies.  Again hypothesis testing shows that these correlations are statistically significant.  What htis analysis shows is that the reason a positive count is advantageous for the player is because we are using a balanced counting system, so a positive count is more likely to decrease.  And a decrease in count is actually what is advantageous for the players--the more 10-value cards and aces dealt, the better off the player is.
+![CDF of distribution of largest losses for a counter strategy](6_1_H17_[3, 2]_twelve_largest_losses_CDF.jpeg "CDF of largest losses")
 
-### 3.3. Simple probabilities<a id='3.3.'></a>
+### 3.2. Correlation between opening count and total round winnings<a id='3.2.'></a>
 
-For each sampled strategy/game-parameter combination, we compute some simple probabilities: the overall probability of winning, the overall expected value of total round winnings (negative for all non-counter strategies regardless of game-parameter), the probability of winning given a positive opening count, the expected value of total round winnings conditioned on a positive opening count (still negative for naive and copycat, but turns positive for basic), and the fifth percentile for losses (the most you can expect to lose 95\% of the time).  DataFrame of simple probabilities coming soon.
+We investigate the correlation between opening count and total round winnings for basic strategy.  For the above game parameters, the Pearson correlation coefficient is $0.0137964008461712$ with p-value $2.6553296900597143\text{e}-43$.  This indicates that a positive count works in the player's favor (when playing basic strategy).
+
+### 3.3. Correlation between change in opening count and total round winnings<a id='3.3.'></a>
+
+The above analysis indicates that a positive opening count is advantageous for the basic player.  In this subsection we investigate the correlation between the change in the opening count and total round winnings for various strategies.  Under the same game parameters the Pearson correltation coefficient for the change in the opening count and the total round winnings is $-0.048813587654906156$ with p-value $0$.  What this analysis shows is that a decrease in count is actually what is advantageous for the players--the more 10-value cards and aces dealt, the better off the player is. Thus a positive count is advantageous for the player because we are using a balanced counting system, so a positive count is more likely to decrease.  See the following regressed scatter plot for these two variables:
+
+![Regressed scatter plot for change in opening count and total round winnings](6_1_H17_[3, 2]_regplot_count_delta.jpeg "Regressed scatter plot for count deltas)
     
 
 
 ## 4. Machine Learning<a id='4._Machine_Learning'></a>
 
-Now that we have collected the data, we prepare it for our machine learning task.  Focusing on the counter strategy, for each bet spread/game-parameter combination sampled, we compute the expected value for total round winnings and the fifth percentile for losses.  This produces a DataFrame with 880 entries (coming soon).  We evaluate various regression models to predict expected value and fifth percentile loss individually (currently in progress).
+We develop models to predict expected values and losses depending on game parameters and bet spreads in [this notebook](https://github.com/scatkinson/BlackjackSimulator/blob/main/BlackjackML.ipynb).
 
+### 4.0. Assembling sampled data<a id='4.0.'></a>
+
+We take the sampled data and assemble it into a DataFrame where each entry is a game parameter and bet spread combination.  In addition to the features for the parameters and spread, the dataframe also has columns for probability of winning, expected value, probabiliyt of winning on a positive count, expected value for a positive count, and the fifth percentile of the corresponding distribution of losses (as negative numbers).  This portion is currently in process.
+
+### 4.1. Modeling<a id='4.1.'></a>
+
+When section 4.0. is complete, we will fit models to the obtained summary DataFrame. Coming soon.
 
 
 
