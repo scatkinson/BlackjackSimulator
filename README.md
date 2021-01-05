@@ -275,7 +275,7 @@ Next we create a dictionary containing 20 different bet spreads for the counter 
 
 These 924 DataFrames (924,000,000 rounds of blackjack) will serve as the raw data for our analysis and training and testing for our predictive models.
 
-These files are too large to upload to GitHub, so we include a smaller version (coming soon) for this repository.
+These files are too large to upload to GitHub, so smaller (25,000 samples each) DataFrames have been uploaded under the [short_samples](https://github.com/scatkinson/BlackjackSimulator/tree/main/short_samples) directory.
 
 
 ## 3. Analysis<a id='3._Analysis'></a>
@@ -294,13 +294,13 @@ For the above game parameters, we plot the accumulated winnings over 1,000,000 r
 * basic
 * counter (twelve spread)
 
-![Plot of accumulated winnings over 1,000,000 rounds for various strategies](plots/6_1_H17_[3, 2]_winnings_plot.jpeg "Plot of accumulated winnings")
+![Plot of accumulated winnings over 1,000,000 rounds for various strategies](plots/6_1_H17_32_winnings_plot.jpeg "Plot of accumulated winnings")
 
 ### 3.1. Largest losses<a id='3.1.'></a>
 
 We define a function `losses` that samples a random collection of 50,000 consecutive rounds from a given strategy dataframe 100,000 times to obtain the distribution of the most amount of money (in terms of betting units) a player can expect to lose.  The function returns the array of losses (length 100,000) and displays a boxplot, histogram/probability density function, and cumulative density function for the distribution of losses.  Here is the plot of the cumulative density function for the distribution of losses for a twelve-spread counter strategy:
 
-![CDF of distribution of largest losses for a counter strategy](6_1_H17_[3, 2]_twelve_largest_losses_CDF.jpeg "CDF of largest losses")
+![CDF of distribution of largest losses for a counter strategy](plots/6_1_H17_32_twelve_largest_losses_CDF.jpeg "CDF of largest losses")
 
 ### 3.2. Correlation between opening count and total round winnings<a id='3.2.'></a>
 
@@ -310,7 +310,7 @@ We investigate the correlation between opening count and total round winnings fo
 
 The above analysis indicates that a positive opening count is advantageous for the basic player.  In this subsection we investigate the correlation between the change in the opening count and total round winnings for various strategies.  Under the same game parameters the Pearson correltation coefficient for the change in the opening count and the total round winnings is $-0.048813587654906156$ with p-value $0$.  What this analysis shows is that a decrease in count is actually what is advantageous for the players--the more 10-value cards and aces dealt, the better off the player is. Thus a positive count is advantageous for the player because we are using a balanced counting system, so a positive count is more likely to decrease.  See the following regressed scatter plot for these two variables:
 
-![Regressed scatter plot for change in opening count and total round winnings](6_1_H17_[3, 2]_regplot_count_delta.jpeg "Regressed scatter plot for count deltas)
+![Regressed scatter plot for change in opening count and total round winnings](plots/6_1_H17_32_regplot_count_delta.jpeg "Regressed scatter plot for count deltas)
     
 
 
