@@ -304,13 +304,13 @@ We define a function `losses` that samples a random collection of 50,000 consecu
 
 ### 3.2. Correlation between opening count and total round winnings<a id='3.2.'></a>
 
-We investigate the correlation between opening count and total round winnings for basic strategy.  For the above game parameters, the Pearson correlation coefficient is $0.0137964008461712$ with p-value $2.6553296900597143\text{e}-43$.  This indicates that a positive count works in the player's favor (when playing basic strategy).
+We investigate the correlation between opening count and total round winnings for basic strategy.  For the above game parameters, the Pearson correlation coefficient is $0.0137964008461712$ with p-value $2.6553296900597143$`e`$-43$.  This indicates that a positive count works in the player's favor (when playing basic strategy).
 
 ### 3.3. Correlation between change in opening count and total round winnings<a id='3.3.'></a>
 
 The above analysis indicates that a positive opening count is advantageous for the basic player.  In this subsection we investigate the correlation between the change in the opening count and total round winnings for various strategies.  Under the same game parameters the Pearson correltation coefficient for the change in the opening count and the total round winnings is $-0.048813587654906156$ with p-value $0$.  What this analysis shows is that a decrease in count is actually what is advantageous for the players--the more 10-value cards and aces dealt, the better off the player is. Thus a positive count is advantageous for the player because we are using a balanced counting system, so a positive count is more likely to decrease.  See the following regressed scatter plot for these two variables:
 
-![Regressed scatter plot for change in opening count and total round winnings](plots/6_1_H17_32_regplot_count_delta.jpeg "Regressed scatter plot for count deltas)
+![Regressed scatter plot for change in opening count and total round winnings](plots/6_1_H17_32_regplot_count_delta.jpeg "Regressed scatter plot for count deltas")
     
 
 
