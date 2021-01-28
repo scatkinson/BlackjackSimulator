@@ -324,7 +324,7 @@ We develop models to predict expected values and losses depending on game parame
 
 ### 4.0. Assembling sampled data<a id='4.0.'></a>
 
-We take the sampled data and assemble it into a DataFrame where each entry is a game parameter and bet spread combination.  In addition to the features for the parameters and spread, the dataframe also has columns for probability of winning, expected value, probabiliyt of winning on a positive count, expected value for a positive count, and the fifth percentile of the corresponding distribution of losses (as negative numbers).  This portion is currently in process.
+We take the sampled data and assemble it into a dataframe where each entry is a game parameter and bet spread combination.  In addition to the features for the parameters and spread, the dataframe also has columns for probability of winning, expected value, probability of winning on a positive count, expected value for a positive count, and the fifth percentile of the corresponding distribution of losses (as negative numbers).  The noncounter dataframe can be found [here](https://github.com/scatkinson/BlackjackSimulator/blob/main/summary_dfs/noncounters.csv). The counter dataframe can be found [here](https://github.com/scatkinson/BlackjackSimulator/blob/main/summary_dfs/counters.csv).
 
 ### 4.1. Modeling<a id='4.1.'></a>
 
