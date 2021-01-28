@@ -45,6 +45,10 @@
 * ### [4.0. Assembling sampled data](#4.0.)
 
 * ### [4.1. Modeling](#4.1.)
+    
+    * #### [4.1.0. Predicting EV](#4.1.0.)
+    
+    * #### [4.1.1. Predicting Min Losses](#4.1.1.)
 
 
 
@@ -324,7 +328,17 @@ We take the sampled data and assemble it into a DataFrame where each entry is a 
 
 ### 4.1. Modeling<a id='4.1.'></a>
 
-When section 4.0. is complete, we will fit models to the obtained summary DataFrame. Coming soon.
+#### 4.1.0. Predicting EV<a id='4.1.0.'></a>
+
+We perform `GridSearchCV` on a polynomial regression and `RandomForestRegressor` for predicting the expected value (EV) for a given game parameter and bet spread combination.  We find that a degree 4 polynomial regression returns an $R^2$ score of 0.9773.  We can improve this score with a `RandomForestRegressor` using criterion `'mae'`, max depth 10, max features `'auto'`, and 1000 estimators.  With these hyperparameters the random forest returns an excellent $R^2$ score of 0.9915. The following plot shows the scatter plot for predicted versus acutal values for this model (the plot is also fitted with a 'perfect fit' line):
+
+![`RandomForestRegressor` scatter plot for predicting EV](plots/RF_EV.jpeg "RF scatter for EV prediction")
+
+#### 4.1.1. Predicting Min Losses<a id='4.1.1.'></a>
+
+We also perform `GridSearchCV` on polynomial regression, `RandomForestRegressor`, `GradientBoostingRegressor`, and `AdaBoostRegressor` for predicting the fifth percentile minimum loss.  Recall for each game parameter and bet spread combination, we ran some Monte Carlo simulations on the results to obtain a distribution for the most amount of money lost in 50,000 rounds.  From each of these distributions, we recorded the fifth percentile minimum loss (= 95th percentile maximum loss when losses considered as positive numbers) in our summary dataframe.  `RandomForestRegressor` again yielded the best score with an $R^2$ value of 0.9316.  The following is the corresponding scatterplot (again fitted with a 'perfect fit' line):
+
+![`RandomForestRegressor` scatter plot for predicting min losses](plots/RF_losses.jpeg "RF scatter for min losses prediction")
 
 
 
